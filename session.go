@@ -73,16 +73,16 @@ func Register(name string, server StorageServer) {
 }
 
 // Init 初始化
-func Init(name string, url string) (*Session, error) {
+func Init(name string, url string) *Session {
 	StorageServersMu.RLock()
 	defer StorageServersMu.RUnlock()
 	server, ok := StorageServers[name]
 	if !ok {
-		return nil, fmt.Errorf("unknow storage server %s,forgotten import?\n", name)
+		panic("unknow storage server " + name + ",forgotten import?")
 	}
 	err := server.InitServer(url)
 	if err != nil {
-		return nil, fmt.Errorf("init error:%v\n", err)
+		panic("init error:" + err.Error())
 	}
 	// 定时每小时检查是否有异常状态的任务
 	ticker := time.NewTicker(1 * time.Minute)
@@ -95,7 +95,7 @@ func Init(name string, url string) (*Session, error) {
 		ticker:        ticker,
 	}
 	go release(s, c)
-	return s, nil
+	return s
 }
 
 // Create 创建新session
