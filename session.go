@@ -78,7 +78,7 @@ func Init(name string, url string) *Session {
 	defer StorageServersMu.RUnlock()
 	server, ok := StorageServers[name]
 	if !ok {
-		panic("unknow storage server " + name + ",forgotten import?")
+		panic("unknown storage server " + name + ",forgotten import?")
 	}
 	err := server.InitServer(url)
 	if err != nil {
