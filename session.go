@@ -85,7 +85,7 @@ func Init(name string, url string) *Session {
 		panic("init error:" + err.Error())
 	}
 	// 定时每小时检查是否有异常状态的任务
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(1 * time.Hour)
 	go checkSession(ticker, server)
 	// 捕获信号，在异常退出时释放资源
 	c := make(chan os.Signal, 1)
