@@ -14,7 +14,7 @@ type EtcdStorageServer struct {
 	client *clientv3.Client
 }
 
-func (e *EtcdStorageServer) InitServer(url string) error {
+func (e *EtcdStorageServer) InitServer(url string, password string) error {
 	// 初始化etcd client
 	var config = clientv3.Config{
 		Endpoints:   []string{url},
@@ -72,7 +72,7 @@ func (e *EtcdStorageServer) ListKeysByPrefix(prefix string) ([]string, error) {
 func (e *EtcdStorageServer) NewLocker(key string) (sync.Locker, error) {
 	s, err := concurrency.NewSession(e.client, concurrency.WithTTL(1))
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	lock := concurrency.NewLocker(s, key)
 	return lock, nil

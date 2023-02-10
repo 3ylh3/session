@@ -41,12 +41,19 @@ type SessionInfo struct {
 
 // StorageServer 接口，屏蔽session存储服务端增删改查具体实现
 type StorageServer interface {
-	InitServer(url string) error
+	// InitServer 根据传入url和密码，初始化存储server，例如初始化etcd client
+	InitServer(url string, password string) error
+	// Close 关闭server
 	Close() error
+	// Put 将kv数据存入存储server
 	Put(key string, data string) error
+	// Get 从存储server中获取指定key的数据
 	Get(key string) (string, error)
+	// Delete 删除指定key
 	Delete(key string) error
+	// ListKeysByPrefix 列出指定前缀的key列表
 	ListKeysByPrefix(prefix string) ([]string, error)
+	// NewLocker 获取指定key的分布式锁
 	NewLocker(key string) (sync.Locker, error)
 }
 
@@ -73,14 +80,14 @@ func Register(name string, server StorageServer) {
 }
 
 // Init 初始化
-func Init(name string, url string) *Session {
+func Init(name string, url string, password string) *Session {
 	StorageServersMu.RLock()
 	defer StorageServersMu.RUnlock()
 	server, ok := StorageServers[name]
 	if !ok {
 		panic("unknown storage server " + name + ",forgotten import?")
 	}
-	err := server.InitServer(url)
+	err := server.InitServer(url, password)
 	if err != nil {
 		panic("init error:" + err.Error())
 	}
