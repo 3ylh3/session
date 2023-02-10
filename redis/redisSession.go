@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"github.com/3ylh3/session"
 	"github.com/redis/go-redis/v9"
 	"sync"
 	"time"
@@ -83,4 +84,8 @@ func (r *RedisStorageServer) NewLocker(key string) (sync.Locker, error) {
 		client: r.client,
 		key:    key,
 	}, nil
+}
+
+func init() {
+	session.Register("redis", &RedisStorageServer{})
 }
